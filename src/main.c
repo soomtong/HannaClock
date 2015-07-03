@@ -16,18 +16,21 @@ static Window *window;
 static BitmapLayer *layers[layers_length];
 static GBitmap *bitmaps[bitmaps_length];
 
-static struct tm s_time;
-
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   static char s_time_buffer[16];
 
   strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", tick_time);
 
-  s_time = *tick_time;
-
   APP_LOG(APP_LOG_LEVEL_DEBUG, "called tick hander: %d", units_changed);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds", s_time.tm_hour, s_time.tm_min, s_time.tm_sec);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds", (*tick_time).tm_hour, (*tick_time).tm_min, (*tick_time).tm_sec);
 
+  // draw new crop area
+  int height = (*tick_time).tm_sec * 2 + 20;
+  GRect crop = GRect(0, 0, 72, (int16_t) height);
+
+  layer_set_bounds(bitmap_layer_get_layer(layers[layer_light]), crop);
+
+  // do it
   layer_mark_dirty(bitmap_layer_get_layer(layers[layer_light]));
 }
 
@@ -35,10 +38,7 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Layer: %p", layer);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Context: %p", ctx);
 
-  int height = s_time.tm_sec * 2 + 20;
-  GRect crop = GRect(0, 0, 72, (int16_t) height);
-
-  layer_set_bounds(bitmap_layer_get_layer(layers[layer_light]), crop);
+  // dummy. no need to perform drawing code
 }
 
 static void load_layers(Layer *root_layer) {
