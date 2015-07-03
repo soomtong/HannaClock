@@ -1,0 +1,29 @@
+{
+  "uuid": "eaaf93aa-9613-4877-bb32-ffc88e6b50b4",
+  "shortName": "HannaClock",
+  "longName": "HannaClock",
+  "companyName": "Woowahan",
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["basalt"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+      {
+        "type": "png",
+        "name": "HANNA_1",
+        "file": "blackplate.png"
+      },
+      {
+        "type": "png",
+        "name": "HANNA_2",
+        "file": "blacklight.png"
+      }
+    ]
+  }
+}
