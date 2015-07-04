@@ -53,60 +53,87 @@ static BitmapLayer *layers[layers_length];
 static GBitmap *bitmaps[bitmaps_length];
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-  static char s_time_buffer[16];
+//  static char s_time_buffer[16];
 
-  strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", tick_time);
+//  strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", tick_time);
 
   APP_LOG(APP_LOG_LEVEL_DEBUG, "called tick hander: %d", units_changed);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds", (*tick_time).tm_hour, (*tick_time).tm_min, (*tick_time).tm_sec);
 
-  GRect hide = GRect(0, 0, 0, 0);
+  // set metrics
   const uint8_t digit_w = 24, digit_h = 26;
   const uint8_t col1 = 2, col2 = 31, col3 = 60, col4 = 89, col5 = 118;
   const uint8_t row1 = 6, row2 = 39, row3 = 72, row4 = 104, row5 = 122;
 
+  const GRect hide = GRect(0, 0, 0, 0);
+  const GRect h1 = GRect(col2, row1, digit_w, digit_h);
+  const GRect h2 = GRect(col1, row2, digit_w, digit_h);
+  const GRect h3 = GRect(col4, row1, digit_w, digit_h);
+  const GRect h4 = GRect(col5, row1, digit_w, digit_h);
+  const GRect h5 = GRect(col3, row1, digit_w, digit_h * 2 + 7);
+  const GRect h6 = GRect(col2, row2, digit_w * 2 + 5, digit_h);
+  const GRect h7 = GRect(col4, row2, digit_w * 2 + 5, digit_h);
+  const GRect h8 = GRect(col1, row3, digit_w * 2 + 5, digit_h);
+  const GRect h9 = GRect(col3, row3, digit_w * 2 + 5, digit_h);
+  const GRect h10 = GRect(col1, row1, digit_w, digit_h);
+
   // hide digit
-  for (int i = 3; i < layers_length; ++i) {
+  for (int i = 2; i < layers_length; ++i) {
     layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
   }
 
-  // show digit
-  GRect h1 = GRect(col2, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+  //uint8_t now_hour = (uint8_t)(*tick_time).tm_hour > 12 ? (uint8_t)(*tick_time).tm_hour - 12 : (uint8_t)(*tick_time).tm_hour;
+  int now_hour = (*tick_time).tm_hour > 12 ? (*tick_time).tm_hour - 12 : (*tick_time).tm_hour;  // used less memory than above
 
-  GRect h2 = GRect(col1, row2, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
+  // show hours
+  switch (now_hour) {
+    case 0:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+      break;
+    case 1:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+      break;
+    case 2:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
+      break;
+    case 3:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h3]), h3);
+      break;
+    case 4:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h4]), h4);
+      break;
+    case 5:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h5]), h5);
+      break;
+    case 6:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h6]), h6);
+      break;
+    case 7:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h7]), h7);
+      break;
+    case 8:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h8]), h8);
+      break;
+    case 9:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h9]), h9);
+      break;
+    case 10:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+      break;
+    case 11:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+      break;
+    case 12:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+      break;
+    default:
+      break;
+  }
 
-  GRect h3 = GRect(col4, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h3]), h3);
-
-  GRect h4 = GRect(col5, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h4]), h4);
-
-  GRect h5 = GRect(col3, row1, digit_w, digit_h * 2 + 7);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h5]), h5);
-
-  GRect h6 = GRect(col2, row2, digit_w * 2 + 5, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h6]), h6);
-
-  GRect h7 = GRect(col4, row2, digit_w * 2 + 5, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h7]), h7);
-
-  GRect h8 = GRect(col1, row3, digit_w * 2 + 5, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h8]), h8);
-
-  GRect h9 = GRect(col3, row3, digit_w * 2 + 5, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h9]), h9);
-
-  GRect h10 = GRect(col1, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
-
-  GRect h11 = GRect(col1, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h11);
-
-  GRect h12 = GRect(col1, row1, digit_w, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h12);
-
+  // hour mark
   GRect hour_mark = GRect(col5, row3, digit_w, digit_h);
   layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour_mark);
 
