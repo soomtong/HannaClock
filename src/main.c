@@ -1,5 +1,6 @@
 #include <pebble.h>
 
+// pair bitmaps with layers for just convenience
 enum PNGBitmaps {
   bitmap_plate = 0,
   bitmap_hour_mark,
@@ -21,6 +22,7 @@ enum PNGBitmaps {
   bitmap_m30,
   bitmap_m40,
   bitmap_m50,
+  bitmap_m10_2,
   bitmaps_length
 };
 
@@ -45,6 +47,7 @@ enum BitmapLayers {
   layer_m30,
   layer_m40,
   layer_m50,
+  layer_m10_2,
   layers_length
 };
 
@@ -76,14 +79,33 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   const GRect h8 = GRect(col1, row3, digit_w * 2 + 5, digit_h);
   const GRect h9 = GRect(col3, row3, digit_w * 2 + 5, digit_h);
   const GRect h10 = GRect(col1, row1, digit_w, digit_h);
+  const GRect hour_mark = GRect(col5, row3, digit_w, digit_h);
+
+  const GRect o_clock = GRect(col1, row4, digit_w * 2 + 5, digit_h);
+  const GRect m5 = GRect(col4, row5, digit_w, digit_h);
+  const GRect m10 = GRect(col5, row4, digit_w, digit_h);
+  const GRect m10_2 = GRect(col3, row5, digit_w, digit_h);
+  const GRect m20 = GRect(col3, row4, digit_w, digit_h);
+  const GRect m30 = GRect(col4, row4, digit_w, digit_h);
+  const GRect m40 = GRect(col1, row5, digit_w, digit_h);
+  const GRect m50 = GRect(col2, row5, digit_w, digit_h);
+  const GRect min_mark = GRect(col5, row5, digit_w, digit_h);
 
   // hide digit
   for (int i = 2; i < layers_length; ++i) {
     layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
   }
 
+  // set clock time
   //uint8_t now_hour = (uint8_t)(*tick_time).tm_hour > 12 ? (uint8_t)(*tick_time).tm_hour - 12 : (uint8_t)(*tick_time).tm_hour;
   int now_hour = (*tick_time).tm_hour > 12 ? (*tick_time).tm_hour - 12 : (*tick_time).tm_hour;  // used less memory than above
+  int now_min = (*tick_time).tm_min / 5;
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "clock time now: %d, %d", now_hour, now_min);
+
+  // condition for update
+  static int prev_hour = -1;
+  static int prev_min = -1;
 
   // show hours
   switch (now_hour) {
@@ -134,12 +156,67 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   }
 
   // hour mark
-  GRect hour_mark = GRect(col5, row3, digit_w, digit_h);
   layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour_mark);
 
-  GRect o_clock = GRect(col1, row4, digit_w * 2 + 5, digit_h);
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
+  // show minutes
+  switch (now_min) {
+    case 0:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
+      break;
+    case 1:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      break;
+    case 2:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      break;
+    case 3:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      break;
+    case 4:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      break;
+    case 5:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      break;
+    case 6:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      break;
+    case 7:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      break;
+    case 8:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+      break;
+    case 9:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      break;
+    case 10:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+      break;
+    case 11:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+      break;
+    case 12:
+      layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
+      break;
+    default:
+      break;
+  }
 
+  // todo: intelligent dirty marking for 5 min limit
   // do it (it's not concern other layers, just works)
   layer_mark_dirty(bitmap_layer_get_layer(layers[layer_plate]));
 }

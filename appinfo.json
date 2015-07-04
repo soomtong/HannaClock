@@ -113,6 +113,11 @@
         "type": "png",
         "name": "HANNA_50M",
         "file": "m50.png"
+      },
+      {
+        "type": "png",
+        "name": "HANNA_10M_2",
+        "file": "m10_2.png"
       }
     ]
   }
