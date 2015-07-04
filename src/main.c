@@ -4,7 +4,6 @@
 enum PNGBitmaps {
   bitmap_plate = 0,
   bitmap_hour_mark,
-  bitmap_min_mark,
   bitmap_h1,
   bitmap_h2,
   bitmap_h3,
@@ -15,6 +14,7 @@ enum PNGBitmaps {
   bitmap_h8,
   bitmap_h9,
   bitmap_h10,
+  bitmap_min_mark,
   bitmap_o_clock,
   bitmap_m5,
   bitmap_m10,
@@ -29,7 +29,6 @@ enum PNGBitmaps {
 enum BitmapLayers {
   layer_plate = 0,
   layer_hour_mark,
-  layer_min_mark,
   layer_h1,
   layer_h2,
   layer_h3,
@@ -40,6 +39,7 @@ enum BitmapLayers {
   layer_h8,
   layer_h9,
   layer_h10,
+  layer_min_mark,
   layer_o_clock,
   layer_m5,
   layer_m10,
@@ -55,8 +55,7 @@ static Window *window;
 static BitmapLayer *layers[layers_length];
 static GBitmap *bitmaps[bitmaps_length];
 
-static int prev_hour = -1;
-static int prev_min = -1;
+static uint8_t prev_hour = 63, prev_min = 63;
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 //  static char s_time_buffer[16];
@@ -94,23 +93,24 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   bool mark_redraw = false;
 
-  // hide digit
-  for (int i = 2; i < layers_length; ++i) {
-    layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
-  }
-
   // set clock time
   //uint8_t now_hour = (uint8_t)(*tick_time).tm_hour > 12 ? (uint8_t)(*tick_time).tm_hour - 12 : (uint8_t)(*tick_time).tm_hour;
   int now_hour = (*tick_time).tm_hour > 12 ? (*tick_time).tm_hour - 12 : (*tick_time).tm_hour;  // used less memory than above
   int now_min = (*tick_time).tm_min / 5;
 
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "clock time prev: %d, %d", prev_hour, prev_min);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "clock time now: %d, %d", now_hour, now_min);
 
   // condition for update
-  if (prev_hour != now_hour) {
+  if (prev_hour != (uint8_t)now_hour) {
 
     mark_redraw = true;
-    prev_hour = now_hour;
+    prev_hour = (uint8_t)now_hour;
+
+    // hide hour digit
+    for (int i = 2; i < 12; ++i) {
+      layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
+    }
 
     // show hours
     switch (now_hour) {
@@ -164,10 +164,15 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour_mark);
   }
 
-  if (prev_min != now_min) {
+  if (prev_min != (uint8_t)now_min) {
 
     mark_redraw = true;
-    prev_min = now_min;
+    prev_min = (uint8_t)now_min;
+
+    // hide min digit
+    for (int i = 12; i < layers_length; ++i) {
+      layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
+    }
 
     // show minutes
     switch (now_min) {
@@ -189,12 +194,12 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         break;
       case 4:
         layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
-        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10_2);
         layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
         break;
       case 5:
         layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
-        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10_2);
         layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
         layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
         break;
@@ -241,13 +246,14 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   // do it (it's not concern other layers, just works)
   if (mark_redraw) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "=== Layer: Redraw!");
     layer_mark_dirty(bitmap_layer_get_layer(layers[layer_plate]));
   }
 }
 
 static void update_light_layer(Layer *layer, GContext *ctx) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Layer: %p", layer);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Context: %p", ctx);
+//  APP_LOG(APP_LOG_LEVEL_DEBUG, "Layer: %p", layer);
+//  APP_LOG(APP_LOG_LEVEL_DEBUG, "Context: %p", ctx);
 
   // dummy. no need to perform drawing code
 }

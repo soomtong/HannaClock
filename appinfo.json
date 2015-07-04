@@ -2,7 +2,7 @@
   "uuid": "eaaf93aa-9613-4877-bb32-ffc88e6b50b4",
   "shortName": "HannaClock",
   "longName": "HannaClock",
-  "companyName": "Woowahan",
+  "companyName": "Soomtong",
   "versionLabel": "1.0",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
@@ -23,11 +23,6 @@
         "type": "png",
         "name": "HANNA_H",
         "file": "hour_mark.png"
-      },
-      {
-        "type": "png",
-        "name": "HANNA_M",
-        "file": "min_mark.png"
       },
       {
         "type": "png",
@@ -78,6 +73,11 @@
         "type": "png",
         "name": "HANNA_10H",
         "file": "h10.png"
+      },
+      {
+        "type": "png",
+        "name": "HANNA_M",
+        "file": "min_mark.png"
       },
       {
         "type": "png",

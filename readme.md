@@ -3,9 +3,9 @@
 Simple Watchface using Hanna font for Pebble Time
 
 - Update Screen only Every 5 min
-- Force Feedback in specified hours (in stock app setting)
+- (todo)Force Feedback in specified hours (in stock app setting)
 
-![demo](resources/pebble-screen-sample.jpg)
+![demo](https://dl.dropboxusercontent.com/u/53671575/hanna-clock-watchface-sample.jpg)
 
 Inspirited by [Toby Yun](http://tobyyun.com/wooclock/)
 
