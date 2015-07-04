@@ -22,7 +22,12 @@
       {
         "type": "png",
         "name": "HANNA_2",
-        "file": "blacklight.png"
+        "file": "hour_mark.png"
+      },
+      {
+        "type": "png",
+        "name": "HANNA_3",
+        "file": "min_mark.png"
       }
     ]
   }

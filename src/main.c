@@ -2,13 +2,15 @@
 
 enum PNGBitmaps {
   bitmap_plate = 0,
-  bitmap_light,
+  bitmap_hour_mark,
+  bitmap_min_mark,
   bitmaps_length
 };
 
 enum BitmapLayers {
   layer_plate = 0,
-  layer_light,
+  layer_hour_mark,
+  layer_min_mark,
   layers_length
 };
 
@@ -25,13 +27,14 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds", (*tick_time).tm_hour, (*tick_time).tm_min, (*tick_time).tm_sec);
 
   // draw new crop area
-  int height = (*tick_time).tm_sec * 2 + 20;
-  GRect crop = GRect(0, 0, 72, (int16_t) height);
+  GRect origin = GRect(0, 0, 0, 0);
+  GRect hour = GRect(116, 70, 28, 31);
+  GRect min = GRect(116, 135, 28, 33);
 
-  layer_set_bounds(bitmap_layer_get_layer(layers[layer_light]), crop);
+  layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour);
 
   // do it
-  layer_mark_dirty(bitmap_layer_get_layer(layers[layer_light]));
+  layer_mark_dirty(bitmap_layer_get_layer(layers[layer_hour_mark]));
 }
 
 static void update_light_layer(Layer *layer, GContext *ctx) {
@@ -44,19 +47,34 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
 static void load_layers(Layer *root_layer) {
   GRect bounds = layer_get_bounds(root_layer);
 
-  for (uint8_t i = 0; i < layers_length; ++i) {
-    layers[i] = bitmap_layer_create(bounds);
-    bitmap_layer_set_bitmap(layers[i], bitmaps[i]);
-    layer_add_child(root_layer, bitmap_layer_get_layer(layers[i]));
-  }
+  // set plate
+  layers[layer_plate] = bitmap_layer_create(bounds);
+  bitmap_layer_set_bitmap(layers[layer_plate], bitmaps[bitmap_plate]);
+  layer_add_child(root_layer, bitmap_layer_get_layer(layers[layer_plate]));
+
+  // set hour
+  GRect hour = GRect(116, 70, 28, 31);
+  layers[layer_hour_mark] = bitmap_layer_create(hour);
+  bitmap_layer_set_bitmap(layers[layer_hour_mark], bitmaps[bitmap_hour_mark]);
+  layer_add_child(root_layer, bitmap_layer_get_layer(layers[layer_hour_mark]));
+
+  // set min
+  GRect min = GRect(116, 135, 28, 33);
+  layers[layer_min_mark] = bitmap_layer_create(min);
+  bitmap_layer_set_bitmap(layers[layer_min_mark], bitmaps[bitmap_min_mark]);
+  layer_add_child(root_layer, bitmap_layer_get_layer(layers[layer_min_mark]));
+
 
   layer_set_update_proc(root_layer, update_light_layer);
 }
 
 static void unload_layers() {
+  for (uint8_t i = 0; i < bitmaps_length; ++i) {
+    if (bitmaps[i]) gbitmap_destroy(bitmaps[i]);
+  }
+
   for (uint8_t i = 0; i < layers_length; ++i) {
     if (layers[i]) bitmap_layer_destroy(layers[i]);
-    if (bitmaps[i]) gbitmap_destroy(bitmaps[i]);
   }
 }
 
