@@ -55,18 +55,19 @@ static Window *window;
 static BitmapLayer *layers[layers_length];
 static GBitmap *bitmaps[bitmaps_length];
 
+static int prev_hour = -1;
+static int prev_min = -1;
+
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 //  static char s_time_buffer[16];
-
 //  strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", tick_time);
 
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "called tick hander: %d", units_changed);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds", (*tick_time).tm_hour, (*tick_time).tm_min, (*tick_time).tm_sec);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds, flag: %d", (*tick_time).tm_hour, (*tick_time).tm_min, (*tick_time).tm_sec, units_changed);
 
   // set metrics
   const uint8_t digit_w = 24, digit_h = 26;
   const uint8_t col1 = 2, col2 = 31, col3 = 60, col4 = 89, col5 = 118;
-  const uint8_t row1 = 6, row2 = 39, row3 = 72, row4 = 104, row5 = 122;
+  const uint8_t row1 = 6, row2 = 39, row3 = 72, row4 = 104, row5 = 137;
 
   const GRect hide = GRect(0, 0, 0, 0);
   const GRect h1 = GRect(col2, row1, digit_w, digit_h);
@@ -91,6 +92,8 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   const GRect m50 = GRect(col2, row5, digit_w, digit_h);
   const GRect min_mark = GRect(col5, row5, digit_w, digit_h);
 
+  bool mark_redraw = false;
+
   // hide digit
   for (int i = 2; i < layers_length; ++i) {
     layer_set_frame(bitmap_layer_get_layer(layers[i]), hide);
@@ -104,121 +107,142 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "clock time now: %d, %d", now_hour, now_min);
 
   // condition for update
-  static int prev_hour = -1;
-  static int prev_min = -1;
+  if (prev_hour != now_hour) {
 
-  // show hours
-  switch (now_hour) {
-    case 0:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
-      break;
-    case 1:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
-      break;
-    case 2:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
-      break;
-    case 3:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h3]), h3);
-      break;
-    case 4:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h4]), h4);
-      break;
-    case 5:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h5]), h5);
-      break;
-    case 6:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h6]), h6);
-      break;
-    case 7:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h7]), h7);
-      break;
-    case 8:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h8]), h8);
-      break;
-    case 9:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h9]), h9);
-      break;
-    case 10:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
-      break;
-    case 11:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
-      break;
-    case 12:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
-      break;
-    default:
-      break;
+    mark_redraw = true;
+    prev_hour = now_hour;
+
+    // show hours
+    switch (now_hour) {
+      case 0:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+        break;
+      case 1:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+        break;
+      case 2:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
+        break;
+      case 3:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h3]), h3);
+        break;
+      case 4:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h4]), h4);
+        break;
+      case 5:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h5]), h5);
+        break;
+      case 6:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h6]), h6);
+        break;
+      case 7:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h7]), h7);
+        break;
+      case 8:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h8]), h8);
+        break;
+      case 9:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h9]), h9);
+        break;
+      case 10:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+        break;
+      case 11:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+        break;
+      case 12:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
+        break;
+      default:
+        break;
+    }
+
+    // hour mark
+    layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour_mark);
   }
 
-  // hour mark
-  layer_set_frame(bitmap_layer_get_layer(layers[layer_hour_mark]), hour_mark);
+  if (prev_min != now_min) {
 
-  // show minutes
-  switch (now_min) {
-    case 0:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
-      break;
-    case 1:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      break;
-    case 2:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      break;
-    case 3:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      break;
-    case 4:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      break;
-    case 5:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      break;
-    case 6:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      break;
-    case 7:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      break;
-    case 8:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
-      break;
-    case 9:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      break;
-    case 10:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
-      break;
-    case 11:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
-      break;
-    case 12:
-      layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
-      break;
-    default:
-      break;
+    mark_redraw = true;
+    prev_min = now_min;
+
+    // show minutes
+    switch (now_min) {
+      case 0:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
+        break;
+      case 1:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 2:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 3:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 4:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 5:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m20]), m20);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 6:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 7:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m30]), m30);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10]), m10);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 8:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 9:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m40]), m40);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 10:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 11:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m5]), m5);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m50]), m50);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_m10_2]), m10_2);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_min_mark]), min_mark);
+        break;
+      case 12:
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_o_clock]), o_clock);
+        break;
+      default:
+        break;
+    }
   }
 
-  // todo: intelligent dirty marking for 5 min limit
   // do it (it's not concern other layers, just works)
-  layer_mark_dirty(bitmap_layer_get_layer(layers[layer_plate]));
+  if (mark_redraw) {
+    layer_mark_dirty(bitmap_layer_get_layer(layers[layer_plate]));
+  }
 }
 
 static void update_light_layer(Layer *layer, GContext *ctx) {
