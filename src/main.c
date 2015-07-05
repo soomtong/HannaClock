@@ -115,7 +115,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     // show hours
     switch (now_hour) {
       case 0:
-        layer_set_frame(bitmap_layer_get_layer(layers[layer_h1]), h1);
+        layer_set_frame(bitmap_layer_get_layer(layers[layer_h2]), h2);
         layer_set_frame(bitmap_layer_get_layer(layers[layer_h10]), h10);
         break;
       case 1:
