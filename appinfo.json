@@ -118,6 +118,12 @@
         "type": "png",
         "name": "HANNA_10M_2",
         "file": "m10_2.png"
+      },
+      {
+        "menuIcon": true,
+        "type": "png",
+        "name": "HANNA_FACE_MENU_ICON",
+        "file": "hannaclock-icon-24.png"
       }
     ]
   }
