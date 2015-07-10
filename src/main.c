@@ -31,18 +31,16 @@ static BitmapLayer *plate;
 static Layer *overlay;
 static GBitmap *bitmaps[bitmaps_length];
 
-static struct tm *t;
 static uint8_t prev_hour = 63, prev_min = 63;
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+static void tick_handler(struct tm *t, TimeUnits units_changed) {
 //  static char s_time_buffer[16];
-//  strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", tick_time);
+//  strftime(s_time_buffer, sizeof(s_time_buffer), "%I:%M:%S", t);
 
-  t = tick_time;
 //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Uptime: %dh %dm %ds, flag: %d", t->tm_hour, t->tm_min, t->tm_sec, units_changed);
 
   // set clock time
-  //uint8_t now_hour = (uint8_t)(*t).tm_hour > 12 ? (uint8_t)(*t).tm_hour - 12 : (uint8_t)(*t).tm_hour;
+//  uint8_t now_hour = (uint8_t)(*t).tm_hour > 12 ? (uint8_t)(*t).tm_hour - 12 : (uint8_t)(*t).tm_hour;
   int now_hour = t->tm_hour > 12 ? t->tm_hour - 12 : t->tm_hour;  // used less memory than above
   int now_min = t->tm_min / 5;
 
@@ -51,7 +49,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     prev_hour = (uint8_t)now_hour;
     prev_min = (uint8_t)now_min;
 
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "=== Layer: Redraw!");
     layer_mark_dirty(overlay);
   }
 }
@@ -62,7 +59,6 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
   const uint8_t col1 = 2, col2 = 31, col3 = 60, col4 = 89, col5 = 118;
   const uint8_t row1 = 6, row2 = 39, row3 = 72, row4 = 104, row5 = 137;
 
-  const GRect hide = GRect(0, 0, 0, 0);
   const GRect h1 = GRect(col2, row1, digit_w, digit_h);
   const GRect h2 = GRect(col1, row2, digit_w, digit_h);
   const GRect h3 = GRect(col4, row1, digit_w, digit_h);
@@ -84,11 +80,6 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
   const GRect m40 = GRect(col1, row5, digit_w, digit_h);
   const GRect m50 = GRect(col2, row5, digit_w, digit_h);
   const GRect min_mark = GRect(col5, row5, digit_w, digit_h);
-
-  // hide hour digit
-  for (int i = 2; i < 12; ++i) {
-    graphics_draw_bitmap_in_rect(ctx, bitmaps[i], hide);
-  }
 
   // show hours
   switch (prev_hour) {
@@ -140,11 +131,6 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
 
   // hour mark
   graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
-
-  // hide min digit
-  for (int i = 12; i < bitmaps_length; ++i) {
-    graphics_draw_bitmap_in_rect(ctx, bitmaps[i], hide);
-  }
 
   // show minutes
   switch (prev_min) {
