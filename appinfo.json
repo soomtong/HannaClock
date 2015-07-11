@@ -3,7 +3,7 @@
   "shortName": "HannaClock",
   "longName": "HannaClock",
   "companyName": "Soomtong",
-  "versionLabel": "1.2",
+  "versionLabel": "1.3",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
   "watchapp": {

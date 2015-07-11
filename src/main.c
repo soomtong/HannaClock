@@ -86,51 +86,62 @@ static void update_light_layer(Layer *layer, GContext *ctx) {
     case 0:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h2], h2);
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h10], h10);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 1:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h1], h1);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 2:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h2], h2);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 3:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h3], h3);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 4:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h4], h4);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 5:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h5], h5);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 6:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h6], h6);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 7:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h7], h7);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 8:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h8], h8);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 9:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h9], h9);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 10:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h10], h10);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 11:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h1], h1);
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h10], h10);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     case 12:
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h2], h2);
       graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_h10], h10);
+      graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
       break;
     default:
       break;
   }
 
-  // hour mark
-  graphics_draw_bitmap_in_rect(ctx, bitmaps[bitmap_hour_mark], hour_mark);
 
   // show minutes
   switch (prev_min) {
