@@ -242,7 +242,7 @@ static void window_load(Window *window) {
 
   tick_timer_service_subscribe(HOUR_UNIT | MINUTE_UNIT, tick_handler);
 
-  uint8_t resource_id = (uint8_t)RESOURCE_ID_HANNA_C_B;
+  uint8_t resource_id = (uint8_t)RESOURCE_ID_HANNA_B;
 
   for (uint8_t i = 0; i < bitmaps_length; ++i) {
     bitmaps[i] = gbitmap_create_with_resource((uint8_t)(resource_id + i));

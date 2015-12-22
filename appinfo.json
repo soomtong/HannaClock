@@ -16,113 +16,113 @@
     "media": [
       {
         "type": "bitmap",
-        "name": "HANNA_C_B",
+        "name": "HANNA_B",
         "file": "blackplate.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_H",
+        "name": "HANNA_H",
         "file": "hour_mark.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_1H",
+        "name": "HANNA_1H",
         "file": "h1.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_2H",
+        "name": "HANNA_2H",
         "file": "h2.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_3H",
+        "name": "HANNA_3H",
         "file": "h3.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_4H",
+        "name": "HANNA_4H",
         "file": "h4.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_5H",
+        "name": "HANNA_5H",
         "file": "h5.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_6H",
+        "name": "HANNA_6H",
         "file": "h6.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_7H",
+        "name": "HANNA_7H",
         "file": "h7.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_8H",
+        "name": "HANNA_8H",
         "file": "h8.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_9H",
+        "name": "HANNA_9H",
         "file": "h9.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_10H",
+        "name": "HANNA_10H",
         "file": "h10.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_M",
+        "name": "HANNA_M",
         "file": "min_mark.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_O",
+        "name": "HANNA_O",
         "file": "o_clock.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_5M",
+        "name": "HANNA_5M",
         "file": "m5.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_10M",
+        "name": "HANNA_10M",
         "file": "m10.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_20M",
+        "name": "HANNA_20M",
         "file": "m20.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_30M",
+        "name": "HANNA_30M",
         "file": "m30.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_40M",
+        "name": "HANNA_40M",
         "file": "m40.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_50M",
+        "name": "HANNA_50M",
         "file": "m50.png"
       },
       {
         "type": "bitmap",
-        "name": "HANNA_C_10M_2",
+        "name": "HANNA_10M_2",
         "file": "m10_2.png"
       },
       {
         "menuIcon": true,
         "type": "bitmap",
-        "name": "HANNA_C_FACE_MENU_ICON",
+        "name": "HANNA_FACE_MENU_ICON",
         "file": "hannaclock-icon-24.png"
       }
     ]
