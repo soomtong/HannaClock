@@ -3,9 +3,9 @@
   "shortName": "HannaClock",
   "longName": "HannaClock",
   "companyName": "Soomtong",
-  "versionLabel": "1.4",
+  "versionLabel": "2.0",
   "sdkVersion": "3",
-  "targetPlatforms": ["basalt"],
+  "targetPlatforms": ["aplite","basalt","chalk"],
   "watchapp": {
     "watchface": true
   },
@@ -15,114 +15,114 @@
   "resources": {
     "media": [
       {
-        "type": "png",
-        "name": "HANNA_B",
+        "type": "bitmap",
+        "name": "HANNA_C_B",
         "file": "blackplate.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_H",
+        "type": "bitmap",
+        "name": "HANNA_C_H",
         "file": "hour_mark.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_1H",
+        "type": "bitmap",
+        "name": "HANNA_C_1H",
         "file": "h1.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_2H",
+        "type": "bitmap",
+        "name": "HANNA_C_2H",
         "file": "h2.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_3H",
+        "type": "bitmap",
+        "name": "HANNA_C_3H",
         "file": "h3.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_4H",
+        "type": "bitmap",
+        "name": "HANNA_C_4H",
         "file": "h4.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_5H",
+        "type": "bitmap",
+        "name": "HANNA_C_5H",
         "file": "h5.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_6H",
+        "type": "bitmap",
+        "name": "HANNA_C_6H",
         "file": "h6.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_7H",
+        "type": "bitmap",
+        "name": "HANNA_C_7H",
         "file": "h7.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_8H",
+        "type": "bitmap",
+        "name": "HANNA_C_8H",
         "file": "h8.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_9H",
+        "type": "bitmap",
+        "name": "HANNA_C_9H",
         "file": "h9.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_10H",
+        "type": "bitmap",
+        "name": "HANNA_C_10H",
         "file": "h10.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_M",
+        "type": "bitmap",
+        "name": "HANNA_C_M",
         "file": "min_mark.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_O",
+        "type": "bitmap",
+        "name": "HANNA_C_O",
         "file": "o_clock.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_5M",
+        "type": "bitmap",
+        "name": "HANNA_C_5M",
         "file": "m5.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_10M",
+        "type": "bitmap",
+        "name": "HANNA_C_10M",
         "file": "m10.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_20M",
+        "type": "bitmap",
+        "name": "HANNA_C_20M",
         "file": "m20.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_30M",
+        "type": "bitmap",
+        "name": "HANNA_C_30M",
         "file": "m30.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_40M",
+        "type": "bitmap",
+        "name": "HANNA_C_40M",
         "file": "m40.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_50M",
+        "type": "bitmap",
+        "name": "HANNA_C_50M",
         "file": "m50.png"
       },
       {
-        "type": "png",
-        "name": "HANNA_10M_2",
+        "type": "bitmap",
+        "name": "HANNA_C_10M_2",
         "file": "m10_2.png"
       },
       {
         "menuIcon": true,
-        "type": "png",
-        "name": "HANNA_FACE_MENU_ICON",
+        "type": "bitmap",
+        "name": "HANNA_C_FACE_MENU_ICON",
         "file": "hannaclock-icon-24.png"
       }
     ]
