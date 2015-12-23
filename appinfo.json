@@ -120,6 +120,16 @@
         "file": "m10_2.png"
       },
       {
+        "type": "bitmap",
+        "name": "HANNA_B_R_H",
+        "file": "blackplate_h.png"
+      },
+      {
+        "type": "bitmap",
+        "name": "HANNA_B_R_M",
+        "file": "blackplate_m.png"
+      },
+      {
         "menuIcon": true,
         "type": "bitmap",
         "name": "HANNA_FACE_MENU_ICON",
