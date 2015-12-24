@@ -11,7 +11,8 @@
     "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "KEY_FEEDBACK_POMODORO": 0,
+    "KEY_FEEDBACK_POMODORO_CYCLE": 1
   },
   "resources": {
     "media": [

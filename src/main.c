@@ -1,5 +1,11 @@
 #include <pebble.h>
 
+#define KEY_FEEDBACK_POMODORO 0
+#define KEY_FEEDBACK_POMODORO_CYCLE 1
+#define PERSIST_KEY_ID_POMODORO 1
+#define PERSIST_KEY_ID_POMODORO_CYCLE 2
+#define PERSIST_KEY_ID_POMODORO_CYCLE_NOW 3
+
 // pair bitmaps with layers for just convenience
 enum PNGBitmaps {
   bitmap_plate = 0,
@@ -34,6 +40,7 @@ static Layer *overlay;
 static GBitmap *bitmaps[bitmaps_length];
 
 static uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
+static int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = 0;
 
 static void tick_handler(struct tm *t, TimeUnits units_changed) {
   // SET CLOCK TIME
@@ -48,7 +55,19 @@ static void tick_handler(struct tm *t, TimeUnits units_changed) {
     layer_mark_dirty(overlay);
 
     // vib feedback by options
+    pomodoro_cycle_now++;
+    APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro: %d, feedback_pomodoro_cycle: %d, feedback_pomodoro_cycle_now: %d ", pomodoro, pomodoro_cycle, pomodoro_cycle_now);
+  }
+}
 
+static void inbox_received_handler(DictionaryIterator *iter, void *context) {
+  // get preference
+  Tuple *pomodoro_t = dict_find(iter, KEY_FEEDBACK_POMODORO);
+  Tuple *pomodoro_cycle_t = dict_find(iter, KEY_FEEDBACK_POMODORO_CYCLE);
+
+  if(pomodoro_t && pomodoro_t->value->int8 > 0 && pomodoro_cycle_t && pomodoro_cycle_t->value->int8) {  // Read boolean as an integer
+    pomodoro = pomodoro_t->value->int8;
+    pomodoro_cycle = pomodoro_cycle_t->value->int8;
   }
 }
 
@@ -419,6 +438,16 @@ static void unload_layers() {
 static void window_load(Window *window) {
   Layer *root_layer = window_get_root_layer(window);
 
+  if (persist_exists(PERSIST_KEY_ID_POMODORO)) {
+    persist_read_data(PERSIST_KEY_ID_POMODORO, &pomodoro, sizeof(pomodoro));
+  }
+  if (persist_exists(PERSIST_KEY_ID_POMODORO_CYCLE)) {
+    persist_read_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
+  }
+  if (persist_exists(PERSIST_KEY_ID_POMODORO_CYCLE_NOW)) {
+    persist_read_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+  }
+
   tick_timer_service_subscribe(HOUR_UNIT | MINUTE_UNIT, tick_handler);
 
   // LOAD RESOURCE
@@ -434,6 +463,10 @@ static void window_load(Window *window) {
 static void window_unload(Window *window) {
   unload_layers();
 
+  persist_write_data(PERSIST_KEY_ID_POMODORO, &pomodoro, sizeof(pomodoro));
+  persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
+  persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+
   tick_timer_service_unsubscribe();
 }
 
@@ -446,9 +479,14 @@ static void init(void) {
 
   const bool animated = true;
   window_stack_push(window, animated);
+
+  app_message_register_inbox_received(inbox_received_handler);
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void deinit(void) {
+  app_message_deregister_callbacks();
+
   window_destroy(window);
 }
 

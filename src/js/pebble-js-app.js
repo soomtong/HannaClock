@@ -17,7 +17,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
     if(configData['feedback_pomodoro'] === true) {
         dict['KEY_FEEDBACK_POMODORO'] = configData['feedback_pomodoro'] ? 1 : 0;  // Send a boolean as an integer
-        dict['KEY_FEEDBACK_POMODORO_CYCLE'] = configData['feedback_pomodoro_cycle'] ? configData['feedback_pomodoro_cycle'] : 0;
+        dict['KEY_FEEDBACK_POMODORO_CYCLE'] = configData['feedback_pomodoro_cycle'] ? Number(configData['feedback_pomodoro_cycle']) : 0;
     } else {
         dict['KEY_FEEDBACK_POMODORO'] = 0;
         dict['KEY_FEEDBACK_POMODORO_CYCLE'] = 0;
