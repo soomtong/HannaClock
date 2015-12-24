@@ -46,6 +46,9 @@ static void tick_handler(struct tm *t, TimeUnits units_changed) {
     prev_min = (uint8_t)now_min;
 
     layer_mark_dirty(overlay);
+
+    // vib feedback by options
+
   }
 }
 
