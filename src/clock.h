@@ -1,0 +1,43 @@
+#pragma once
+#include <pebble.h>
+
+// pair bitmaps with layers for just convenience
+enum PNGBitmaps {
+  bitmap_plate = 0,
+  bitmap_hour_mark,
+  bitmap_h1,
+  bitmap_h2,
+  bitmap_h3,
+  bitmap_h4,
+  bitmap_h5,
+  bitmap_h6,
+  bitmap_h7,
+  bitmap_h8,
+  bitmap_h9,
+  bitmap_h10,
+  bitmap_min_mark,
+  bitmap_o_clock,
+  bitmap_m5,
+  bitmap_m10,
+  bitmap_m20,
+  bitmap_m30,
+  bitmap_m40,
+  bitmap_m50,
+  bitmap_m10_2,
+  bitmap_plate_round_h,
+  bitmap_plate_round_m,
+  bitmaps_length
+};
+
+extern Window *window;
+extern Layer *overlay;
+extern BitmapLayer *plate;
+extern GBitmap *bitmaps[bitmaps_length];
+extern int8_t pomodoro, pomodoro_cycle, pomodoro_cycle_now;
+
+void update_rect_light_layer(Layer *layer, GContext *ctx);
+void update_round_light_layer(Layer *layer, GContext *ctx);
+void tick_handler(struct tm *t, TimeUnits units_changed);
+void inbox_received_handler(DictionaryIterator *iter, void *context);
+void load_layers(Layer *root_layer);
+void unload_layers();
