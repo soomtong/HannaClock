@@ -1,9 +1,6 @@
 #include <pebble.h>
 
-#include "common.h"
 #include "clock.h"
-
-Window *window;
 
 static void window_load(Window *window) {
   Layer *root_layer = window_get_root_layer(window);

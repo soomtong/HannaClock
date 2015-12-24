@@ -1,5 +1,12 @@
 #pragma once
+
 #include <pebble.h>
+
+#define KEY_FEEDBACK_POMODORO 0
+#define KEY_FEEDBACK_POMODORO_CYCLE 1
+#define PERSIST_KEY_ID_POMODORO 1
+#define PERSIST_KEY_ID_POMODORO_CYCLE 2
+#define PERSIST_KEY_ID_POMODORO_CYCLE_NOW 3
 
 // pair bitmaps with layers for just convenience
 enum PNGBitmaps {
@@ -36,8 +43,13 @@ extern GBitmap *bitmaps[bitmaps_length];
 extern int8_t pomodoro, pomodoro_cycle, pomodoro_cycle_now;
 
 void update_rect_light_layer(Layer *layer, GContext *ctx);
+
 void update_round_light_layer(Layer *layer, GContext *ctx);
+
 void tick_handler(struct tm *t, TimeUnits units_changed);
+
 void inbox_received_handler(DictionaryIterator *iter, void *context);
+
 void load_layers(Layer *root_layer);
+
 void unload_layers();

@@ -1,11 +1,14 @@
-#include "common.h"
+#include <pebble.h>
+
 #include "clock.h"
 
+Window *window;
 Layer *overlay;
 BitmapLayer *plate;
 GBitmap *bitmaps[bitmaps_length];
 
 int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = 0;
+
 uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
 
 void update_rect_light_layer(Layer *layer, GContext *ctx) {
