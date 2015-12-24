@@ -14,6 +14,9 @@
             color: #888888;
             text-align: center;
         }
+        .button-container {
+            margin: 10px auto;
+        }
     </style>
 </head>
 
@@ -21,19 +24,11 @@
 <h1 class='title'>Configuration</h1>
 
 <div class='item-container'>
-    <div class='item-container-content'>
-        <div class='item'>
-            Use Vibration for Feedback
-        </div>
-    </div>
-</div>
-
-<div class='item-container'>
     <div class='item-container-header'>Feedback</div>
     <div class='item-container-content'>
         <label class='item'>
             Pomodoro Mode
-            <input id='high_contrast_checkbox' type='checkbox' class='item-toggle'>
+            <input id='feedback_pomodoro' type='checkbox' class='item-toggle' name="pomodoro">
         </label>
     </div>
     <div class='item-container-footer'>
@@ -41,9 +36,9 @@
     </div>
     <div class="item-container-content">
         <label class="item">
-            <input type="range" class="item-slider" name="slider-1" value="8" min="1" max="16">
+            <input id="feedback_pomodoro_cycle" type="range" class="item-slider" name="pomodoro-cycle" value="8" min="1" max="16">
             <div class="item-input-wrapper item-slider-text">
-                <input type="text" class="item-input" name="slider-1" value="8">
+                <input id="feedback_pomodoro_cycle_value" type="text" class="item-input" name="pomodoro-cycle" value="8">
             </div>
         </label>
     </div>
@@ -56,23 +51,28 @@
     <div class='button-container'>
         <input id='submit_button' type='button' class='item-button' value='SUBMIT'>
     </div>
+    <div class="button-container">
+        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KFFPRCR8FV8HJ" target="_blank">
+            <button type='button' class='item-button'>DONATE</button>
+        </a>
+    </div>
 </div>
 </body>
 <script>
     function getConfigData() {
-        var backgroundColorPicker = document.getElementById('background_color_picker');
-        var highContrastCheckbox = document.getElementById('high_contrast_checkbox');
+        var feedbackPomodoro = document.getElementById('feedback_pomodoro');
+        var feedbackPomodoroCycle = document.getElementById('feedback_pomodoro_cycle');
 
         var options = {
-            'background_color': backgroundColorPicker.value,
-            'high_contrast': highContrastCheckbox.checked
+            'feedback_pomodoro': feedbackPomodoro.checked,
+            'feedback_pomodoro_cycle': feedbackPomodoroCycle.value
         };
 
         // Save for next launch
-        localStorage['background_color'] = options['background_color'];
-        localStorage['high_contrast'] = options['high_contrast'];
+        localStorage['feedback_pomodoro'] = options['feedback_pomodoro'];
+        localStorage['feedback_pomodoro_cycle'] = options['feedback_pomodoro_cycle'];
 
-        console.log('Got options: ' + JSON.stringify(options));
+        //console.log('Got options: ' + JSON.stringify(options));
         return options;
     }
 
@@ -89,22 +89,25 @@
     }
 
     var submitButton = document.getElementById('submit_button');
-    submitButton.addEventListener('click', function() {
-        console.log('Submit');
+
+    submitButton.addEventListener('click', function () {
+        //console.log('Submit');
 
         // Set the return URL depending on the runtime environment
         var return_to = getQueryParam('return_to', 'pebblejs://close#');
         document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
     });
 
-    (function() {
-        var backgroundColorPicker = document.getElementById('background_color_picker');
-        var highContrastCheckbox = document.getElementById('high_contrast_checkbox');
+    (function () {
+        var feedbackPomodoro = document.getElementById('feedback_pomodoro');
+        var feedbackPomodoroCycle = document.getElementById('feedback_pomodoro_cycle');
+        var feedbackPomodoroCycleValue = document.getElementById('feedback_pomodoro_cycle_value');
 
         // Load any previously saved configuration, if available
-        if(localStorage['high_contrast']) {
-            highContrastCheckbox.checked = JSON.parse(localStorage['high_contrast']);
-            backgroundColorPicker.value = localStorage['background_color'];
+        if (localStorage['feedback_pomodoro']) {
+            feedbackPomodoro.checked = JSON.parse(localStorage['feedback_pomodoro']);
+            feedbackPomodoroCycle.value = localStorage['feedback_pomodoro_cycle'];
+            feedbackPomodoroCycleValue.value = localStorage['feedback_pomodoro_cycle'];
         }
     })();
 </script>
