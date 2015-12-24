@@ -1,6 +1,6 @@
 # HannaClock
 
-Simple Watchface using Hanna font for Pebble Time
+Simple Watchface using Hanna font for Pebble Classic, Time and Time Round
 
 - Update Screen only Every 5 min
 - (todo)Force Feedback in specified hours (in stock app setting)
