@@ -7,7 +7,7 @@ Layer *overlay;
 BitmapLayer *plate;
 GBitmap *bitmaps[bitmaps_length];
 
-int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = 0;
+int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = -1;
 
 uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
 
@@ -348,6 +348,20 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
   int now_hour = t->tm_hour > 12 ? t->tm_hour - 12 : t->tm_hour;  // used less memory than above
   int now_min = t->tm_min / 5;
 
+  // Vibe pattern: ON for 200ms, OFF for 100ms, ON for 400ms:
+  const uint32_t const pomodoro_segments[] = { 1000, 500, 1000, 500, 1000 };
+  const uint32_t const rest_segments[] = { 200, 100, 400, 100, 200, 100, 400, 100, 200 };
+
+  VibePattern pat1 = {
+      .durations = pomodoro_segments,
+      .num_segments = ARRAY_LENGTH(pomodoro_segments),
+  };
+  VibePattern pat2 = {
+      .durations = rest_segments,
+      .num_segments = ARRAY_LENGTH(rest_segments),
+  };
+
+
   // condition for update
   if (prev_hour != (uint8_t)now_hour || prev_min != (uint8_t)now_min) {
     prev_hour = (uint8_t)now_hour;
@@ -356,8 +370,32 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
     layer_mark_dirty(overlay);
 
     // vib feedback by options
-    pomodoro_cycle_now++;
-    APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro: %d, feedback_pomodoro_cycle: %d, feedback_pomodoro_cycle_now: %d ", pomodoro, pomodoro_cycle, pomodoro_cycle_now);
+    if (pomodoro) {
+      if (pomodoro_cycle > pomodoro_cycle_now) {
+        pomodoro_cycle_now++;
+        APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro: %d, feedback_pomodoro_cycle: %d, feedback_pomodoro_cycle_now: %d ", pomodoro, pomodoro_cycle, pomodoro_cycle_now);
+
+        // pomodoro_cycle_now == 0, 5, 6, 11
+        int8_t check = pomodoro_cycle_now % 6;
+
+        switch (check) {
+          case 0:   // start pomodoro
+            APP_LOG(APP_LOG_LEVEL_INFO, "start check: %d", check);
+
+            vibes_enqueue_custom_pattern(pat1);
+
+            break;
+          case 5:   // rest pomodoro
+            APP_LOG(APP_LOG_LEVEL_INFO, "rest check: %d", check);
+
+            vibes_enqueue_custom_pattern(pat2);
+
+            break;
+          default:
+            break;
+        }
+      }
+    }
   }
 }
 
@@ -366,9 +404,30 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *pomodoro_t = dict_find(iter, KEY_FEEDBACK_POMODORO);
   Tuple *pomodoro_cycle_t = dict_find(iter, KEY_FEEDBACK_POMODORO_CYCLE);
 
-  if(pomodoro_t && pomodoro_t->value->int8 > 0 && pomodoro_cycle_t && pomodoro_cycle_t->value->int8) {  // Read boolean as an integer
+  const uint32_t const end_segments[] = { 100, 200, 100 };
+
+  VibePattern pat3 = {
+      .durations = end_segments,
+      .num_segments = ARRAY_LENGTH(end_segments),
+  };
+
+  if(pomodoro_t && pomodoro_t->value->int8 > -1 && pomodoro_cycle_t && pomodoro_cycle_t->value->int8 > -1) {  // Read boolean as an integer
     pomodoro = pomodoro_t->value->int8;
     pomodoro_cycle = pomodoro_cycle_t->value->int8;
+
+    if (pomodoro && pomodoro_cycle_now == -1) { // init pomodoro
+      //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro_cycle, pomodoro_cycle_now);
+
+      vibes_long_pulse();
+    } else {
+      pomodoro_cycle_now = -1;
+
+      vibes_enqueue_custom_pattern(pat3);
+
+      persist_write_data(PERSIST_KEY_ID_POMODORO, &pomodoro, sizeof(pomodoro));
+      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
+      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+    }
   }
 }
 
@@ -385,7 +444,7 @@ void load_layers(Layer *root_layer) {
   layer_add_child(root_layer, overlay);
 
   // Conditionally print out the shape of the display
-//  APP_LOG(APP_LOG_LEVEL_INFO, "This is a %s display!", PBL_IF_RECT_ELSE("rectangular", "round"));
+  //APP_LOG(APP_LOG_LEVEL_INFO, "This is a %s display!", PBL_IF_RECT_ELSE("rectangular", "round"));
 
 #if defined(PBL_ROUND)
   layer_set_update_proc(overlay, update_round_light_layer);
