@@ -3,7 +3,7 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-    var url = 'https://rawgit.com/soomtong/HannaClock/dev/config/index.html';
+    var url = 'https://rawgit.com/soomtong/HannaClock/master/config/index.html';
     //console.log('Showing configuration page: ' + url);
 
     Pebble.openURL(url);
