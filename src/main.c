@@ -13,9 +13,9 @@ static void window_load(Window *window) {
     persist_read_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
   }
   if (persist_exists(PERSIST_KEY_ID_POMODORO_CYCLE_NOW)) {
-    persist_read_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+    persist_read_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_timer, sizeof(pomodoro_timer));
 
-    if (pomodoro_cycle <= pomodoro_cycle_now) pomodoro_cycle_now = -1;
+    if (pomodoro_cycle <= pomodoro_timer) pomodoro_timer = -1;
   }
 
   tick_timer_service_subscribe(HOUR_UNIT | MINUTE_UNIT, tick_handler);
@@ -35,7 +35,7 @@ static void window_unload(Window *window) {
 
   persist_write_data(PERSIST_KEY_ID_POMODORO, &pomodoro, sizeof(pomodoro));
   persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
-  persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+  persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_timer, sizeof(pomodoro_timer));
 
   tick_timer_service_unsubscribe();
 }

@@ -40,7 +40,7 @@ extern Window *window;
 extern Layer *overlay;
 extern BitmapLayer *plate;
 extern GBitmap *bitmaps[bitmaps_length];
-extern int8_t pomodoro, pomodoro_cycle, pomodoro_cycle_now;
+extern int8_t pomodoro, pomodoro_cycle, pomodoro_cycle_now, pomodoro_timer;
 
 void update_rect_light_layer(Layer *layer, GContext *ctx);
 

@@ -7,7 +7,7 @@ Layer *overlay;
 BitmapLayer *plate;
 GBitmap *bitmaps[bitmaps_length];
 
-int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = -1;
+int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = 0, pomodoro_timer = -1;
 
 uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
 
@@ -350,7 +350,7 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
 
   // Vibe pattern: ON for 200ms, OFF for 100ms, ON for 400ms:
   const uint32_t const pomodoro_segments[] = { 1000, 500, 1000, 500, 1000 };
-  const uint32_t const rest_segments[] = { 200, 100, 400, 100, 200, 100, 400, 100, 200 };
+  const uint32_t const rest_segments[] = { 400, 500, 800, 500, 400, 500, 800, 500, 400 };
 
   VibePattern pat1 = {
       .durations = pomodoro_segments,
@@ -369,27 +369,29 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
 
     layer_mark_dirty(overlay);
 
-    // vib feedback by options
+    // feedback by options
     if (pomodoro) {
       if (pomodoro_cycle > pomodoro_cycle_now) {
-        pomodoro_cycle_now++;
+        pomodoro_timer++;
         APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro: %d, feedback_pomodoro_cycle: %d, feedback_pomodoro_cycle_now: %d ", pomodoro, pomodoro_cycle, pomodoro_cycle_now);
 
-        // pomodoro_cycle_now == 0, 5, 6, 11
-        int8_t check = pomodoro_cycle_now % 6;
+        // pomodoro_timer == 0, 5, 6, 11
+        int8_t check = (int8_t) (pomodoro_timer % 6);
+
+        APP_LOG(APP_LOG_LEVEL_INFO, "check: %d", check);
 
         switch (check) {
           case 0:   // start pomodoro
-            APP_LOG(APP_LOG_LEVEL_INFO, "start check: %d", check);
-
             vibes_enqueue_custom_pattern(pat1);
+
+            APP_LOG(APP_LOG_LEVEL_INFO, "go pomodoro: %d", pomodoro_cycle_now);
 
             break;
           case 5:   // rest pomodoro
-            APP_LOG(APP_LOG_LEVEL_INFO, "rest check: %d", check);
-
+            pomodoro_cycle_now++;
             vibes_enqueue_custom_pattern(pat2);
 
+            APP_LOG(APP_LOG_LEVEL_INFO, "take rest: %d", pomodoro_cycle_now);
             break;
           default:
             break;
@@ -415,12 +417,13 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
     pomodoro = pomodoro_t->value->int8;
     pomodoro_cycle = pomodoro_cycle_t->value->int8;
 
-    if (pomodoro && pomodoro_cycle_now == -1) { // init pomodoro
+    if (pomodoro && pomodoro_cycle_now == 0) { // init pomodoro
       //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro_cycle, pomodoro_cycle_now);
 
       vibes_long_pulse();
     } else {
-      pomodoro_cycle_now = -1;
+      pomodoro_cycle_now = 0;
+      pomodoro_timer = -1;
 
       vibes_enqueue_custom_pattern(pat3);
 
