@@ -36,11 +36,15 @@ enum PNGBitmaps {
   bitmaps_length
 };
 
+typedef struct Pomodoro {
+  int8_t mode, cycle, cycle_now, timer;
+} Pomodoro;
+
 extern Window *window;
 extern Layer *overlay;
 extern BitmapLayer *plate;
 extern GBitmap *bitmaps[bitmaps_length];
-extern int8_t pomodoro, pomodoro_cycle, pomodoro_cycle_now, pomodoro_timer;
+extern Pomodoro pomodoro;
 
 void update_rect_light_layer(Layer *layer, GContext *ctx);
 

@@ -2,14 +2,32 @@
 
 #include "clock.h"
 
-Window *window;
-Layer *overlay;
-BitmapLayer *plate;
-GBitmap *bitmaps[bitmaps_length];
+Window *window = NULL;
+Layer *overlay = NULL;
+BitmapLayer *plate = NULL;
+GBitmap *bitmaps[bitmaps_length] = {NULL};
 
-int8_t pomodoro = 0, pomodoro_cycle = 0, pomodoro_cycle_now = 0, pomodoro_timer = -1;
+Pomodoro pomodoro = {.mode = 0, .cycle = 0, .cycle_now = 0, .timer = -1};
 
 uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
+
+const uint32_t const pomodoro_segments[] = { 1000, 500, 1000, 500, 1000 };
+const uint32_t const rest_segments[] = { 400, 500, 800, 500, 400, 500, 800, 500, 400 };
+const uint32_t const end_segments[] = { 100, 200, 100 };
+
+VibePattern pat1 = {
+    .durations = pomodoro_segments,
+    .num_segments = ARRAY_LENGTH(pomodoro_segments),
+};
+VibePattern pat2 = {
+    .durations = rest_segments,
+    .num_segments = ARRAY_LENGTH(rest_segments),
+};
+VibePattern pat3 = {
+    .durations = end_segments,
+    .num_segments = ARRAY_LENGTH(end_segments),
+};
+
 
 void update_rect_light_layer(Layer *layer, GContext *ctx) {
   // set metrics
@@ -348,20 +366,6 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
   int now_hour = t->tm_hour > 12 ? t->tm_hour - 12 : t->tm_hour;  // used less memory than above
   int now_min = t->tm_min / 5;
 
-  // Vibe pattern: ON for 200ms, OFF for 100ms, ON for 400ms:
-  const uint32_t const pomodoro_segments[] = { 1000, 500, 1000, 500, 1000 };
-  const uint32_t const rest_segments[] = { 400, 500, 800, 500, 400, 500, 800, 500, 400 };
-
-  VibePattern pat1 = {
-      .durations = pomodoro_segments,
-      .num_segments = ARRAY_LENGTH(pomodoro_segments),
-  };
-  VibePattern pat2 = {
-      .durations = rest_segments,
-      .num_segments = ARRAY_LENGTH(rest_segments),
-  };
-
-
   // condition for update
   if (prev_hour != (uint8_t)now_hour || prev_min != (uint8_t)now_min) {
     prev_hour = (uint8_t)now_hour;
@@ -370,28 +374,28 @@ void tick_handler(struct tm *t, TimeUnits units_changed) {
     layer_mark_dirty(overlay);
 
     // feedback by options
-    if (pomodoro) {
-      if (pomodoro_cycle > pomodoro_cycle_now) {
-        pomodoro_timer++;
-        APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro: %d, feedback_pomodoro_cycle: %d, feedback_pomodoro_cycle_now: %d ", pomodoro, pomodoro_cycle, pomodoro_cycle_now);
+    if (pomodoro.mode) {
+      if (pomodoro.cycle > pomodoro.cycle_now) {
+        pomodoro.timer++;
+        //APP_LOG(APP_LOG_LEVEL_INFO, "feedback_pomodoro.mode: %d, feedback_pomodoro.cycle: %d, feedback_pomodoro.cycle_now: %d ", pomodoro.mode, pomodoro.cycle, pomodoro.cycle_now);
 
-        // pomodoro_timer == 0, 5, 6, 11
-        int8_t check = (int8_t) (pomodoro_timer % 6);
+        // pomodoro.timer == 0, 5, 6, 11
+        int8_t check = (int8_t) (pomodoro.timer % 6);
 
-        APP_LOG(APP_LOG_LEVEL_INFO, "check: %d", check);
+        //APP_LOG(APP_LOG_LEVEL_INFO, "check: %d", check);
 
         switch (check) {
           case 0:   // start pomodoro
             vibes_enqueue_custom_pattern(pat1);
 
-            APP_LOG(APP_LOG_LEVEL_INFO, "go pomodoro: %d", pomodoro_cycle_now);
+            //APP_LOG(APP_LOG_LEVEL_INFO, "go pomodoro: %d", pomodoro.cycle_now);
 
             break;
           case 5:   // rest pomodoro
-            pomodoro_cycle_now++;
+            pomodoro.cycle_now++;
             vibes_enqueue_custom_pattern(pat2);
 
-            APP_LOG(APP_LOG_LEVEL_INFO, "take rest: %d", pomodoro_cycle_now);
+            //APP_LOG(APP_LOG_LEVEL_INFO, "take rest: %d", pomodoro.cycle_now);
             break;
           default:
             break;
@@ -406,30 +410,23 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *pomodoro_t = dict_find(iter, KEY_FEEDBACK_POMODORO);
   Tuple *pomodoro_cycle_t = dict_find(iter, KEY_FEEDBACK_POMODORO_CYCLE);
 
-  const uint32_t const end_segments[] = { 100, 200, 100 };
+  if(pomodoro_t && pomodoro_t->value->int8 > -1 && pomodoro_cycle_t && pomodoro_cycle_t->value->int8 > -1) {
+    pomodoro.mode = pomodoro_t->value->int8;
+    pomodoro.cycle = pomodoro_cycle_t->value->int8;
 
-  VibePattern pat3 = {
-      .durations = end_segments,
-      .num_segments = ARRAY_LENGTH(end_segments),
-  };
-
-  if(pomodoro_t && pomodoro_t->value->int8 > -1 && pomodoro_cycle_t && pomodoro_cycle_t->value->int8 > -1) {  // Read boolean as an integer
-    pomodoro = pomodoro_t->value->int8;
-    pomodoro_cycle = pomodoro_cycle_t->value->int8;
-
-    if (pomodoro && pomodoro_cycle_now == 0) { // init pomodoro
-      //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro_cycle, pomodoro_cycle_now);
+    if (pomodoro.mode && pomodoro.cycle_now == 0) { // init pomodoro
+      //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro.cycle, pomodoro.cycle_now);
 
       vibes_long_pulse();
     } else {
-      pomodoro_cycle_now = 0;
-      pomodoro_timer = -1;
+      pomodoro.cycle_now = 0;
+      pomodoro.timer = -1;
 
       vibes_enqueue_custom_pattern(pat3);
 
-      persist_write_data(PERSIST_KEY_ID_POMODORO, &pomodoro, sizeof(pomodoro));
-      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro_cycle, sizeof(pomodoro_cycle));
-      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro_cycle_now, sizeof(pomodoro_cycle_now));
+      persist_write_data(PERSIST_KEY_ID_POMODORO, &pomodoro.mode, sizeof(pomodoro.mode));
+      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE, &pomodoro.cycle, sizeof(pomodoro.cycle));
+      persist_write_data(PERSIST_KEY_ID_POMODORO_CYCLE_NOW, &pomodoro.cycle_now, sizeof(pomodoro.cycle_now));
     }
   }
 }
