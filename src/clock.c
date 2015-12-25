@@ -12,7 +12,7 @@ Pomodoro pomodoro = {.mode = 0, .cycle = 0, .cycle_now = 0, .timer = -1};
 uint8_t prev_hour = 63, prev_min = 63; // just 2^6 last number
 
 const uint32_t const pomodoro_segments[] = { 1000, 500, 1000, 500, 1000 };
-const uint32_t const rest_segments[] = { 400, 500, 800, 500, 400, 500, 800, 500, 400 };
+const uint32_t const rest_segments[] = { 400, 900, 800, 900, 400, 900, 800, 900, 400 };
 const uint32_t const end_segments[] = { 100, 200, 100 };
 
 VibePattern pat1 = {
