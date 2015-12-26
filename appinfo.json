@@ -3,7 +3,7 @@
   "shortName": "HannaClock",
   "longName": "HannaClock",
   "companyName": "Soomtong",
-  "versionLabel": "2.2",
+  "versionLabel": "2.3",
   "capabilities": [ "configurable" ],
   "sdkVersion": "3",
   "targetPlatforms": ["aplite","basalt","chalk"],
