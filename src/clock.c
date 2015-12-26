@@ -414,11 +414,19 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
     pomodoro.mode = pomodoro_t->value->int8;
     pomodoro.cycle = pomodoro_cycle_t->value->int8;
 
-    if (pomodoro.mode && pomodoro.cycle_now == 0) { // init pomodoro
-      //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro.cycle, pomodoro.cycle_now);
+    if (pomodoro.mode) {
+      // init pomodoro or continue pomodoro
+      if (pomodoro.cycle_now < 1) {
+        //APP_LOG(APP_LOG_LEVEL_INFO, "init pomodoro: %d / %d", pomodoro.cycle, pomodoro.cycle_now);
 
-      vibes_long_pulse();
+        vibes_long_pulse();
+      } else {
+        //APP_LOG(APP_LOG_LEVEL_INFO, "continue pomodoro: %d / %d", pomodoro.cycle, pomodoro.cycle_now);
+
+        vibes_short_pulse();
+      }
     } else {
+      // clear pomodoro
       pomodoro.cycle_now = 0;
       pomodoro.timer = -1;
 
